@@ -1,28 +1,19 @@
+# Unreal Engine Specific
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+Build/
+
+# Visual Studio / IDE
+.vs/
+*.sln
+*.suo
+*.opensdf
+*.sdf
+*.xcworkspace
+*.v12.suo
+
 # OS generated files
 .DS_Store
 Thumbs.db
-
-# Visual Studio
-.vs/
-*.user
-*.suo
-*.cache
-*.sln.docstates
-
-# C++ Build Outputs & Game Engine Artifacts
-Debug/
-Release/
-x64/
-x86/
-build/
-bin/
-obj/
-*.ilk
-*.pdb
-*.exp
-*.lib
-*.idb
-
-# Web / Node (for cross-platform tool requirements)
-node_modules/
-dist/
