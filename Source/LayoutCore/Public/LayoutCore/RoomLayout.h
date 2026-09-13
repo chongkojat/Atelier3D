@@ -74,9 +74,10 @@ namespace LayoutCore
 		std::vector<CriterionScore> Breakdown;
 	};
 
-	// Selection + Placement + Evaluation, single pass. Currently a placeholder:
-	// it anchors one item at the room centroid and scores by floor area so the
-	// pipeline is exercised end to end. Real Selection/Placement/Evaluation land here.
+	// Selection + Placement + Evaluation, single pass, against the placeholder
+	// catalogue in FurnitureCatalogue.h. Selects groups by density/style, anchors
+	// each against a room wall (rejecting overlaps against a real oriented-box
+	// clearance check), and scores the result. See docs/architecture.md.
 	// LAYOUTCORE_API is a plain preprocessor define UBT supplies on the command
 	// line (dllexport/dllimport) -- it doesn't pull in any Unreal headers.
 	LAYOUTCORE_API LayoutResult GenerateLayout(const RoomModel& Room, EDensity Density, EStyle Style);

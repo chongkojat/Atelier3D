@@ -6,12 +6,30 @@ ALayoutTestActor::ALayoutTestActor()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
+	// A believable single-room scale (5m x 4m); shrink this in the Details
+	// panel to see the Completeness score drop as fewer groups fit.
 	RoomOutlinePoints = {
 		FVector2D(0.0f, 0.0f),
-		FVector2D(400.0f, 0.0f),
-		FVector2D(400.0f, 300.0f),
-		FVector2D(0.0f, 300.0f)
+		FVector2D(500.0f, 0.0f),
+		FVector2D(500.0f, 400.0f),
+		FVector2D(0.0f, 400.0f)
 	};
+}
+
+namespace
+{
+	FColor ColorForGroupRole(const FString& GroupRole)
+	{
+		if (GroupRole == TEXT("Dining"))
+		{
+			return FColor::Orange;
+		}
+		if (GroupRole == TEXT("Storage"))
+		{
+			return FColor::Cyan;
+		}
+		return FColor::Yellow; // Seating, and anything else for now
+	}
 }
 
 void ALayoutTestActor::BeginPlay()
@@ -24,13 +42,20 @@ void ALayoutTestActor::BeginPlay()
 	for (const FPlacedFurnitureItem& Item : Result.Items)
 	{
 		const FVector WorldPos = Origin + FVector(Item.Position.X, Item.Position.Y, 50.0f);
-		DrawDebugSphere(GetWorld(), WorldPos, 30.0f, 12, FColor::Yellow, true, -1.0f);
-		DrawDebugString(GetWorld(), WorldPos + FVector(0.0f, 0.0f, 40.0f), Item.ItemId, nullptr, FColor::White, 0.0f, true);
+		const FColor SphereColor = ColorForGroupRole(Item.GroupRole);
+		DrawDebugSphere(GetWorld(), WorldPos, 25.0f, 12, SphereColor, true, -1.0f);
+		DrawDebugString(GetWorld(), WorldPos + FVector(0.0f, 0.0f, 30.0f), Item.ItemId, nullptr, FColor::White, 0.0f, true);
 	}
 
 	if (GEngine)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green,
-			FString::Printf(TEXT("Atelier3D layout score: %.1f (%d item(s))"), Result.TotalScore, Result.Items.Num()));
+		GEngine->AddOnScreenDebugMessage(-1, 20.0f, FColor::Green,
+			FString::Printf(TEXT("Atelier3D total score: %.1f (%d item(s))"), Result.TotalScore, Result.Items.Num()));
+
+		for (const FCriterionScore& Criterion : Result.Breakdown)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 20.0f, FColor::White,
+				FString::Printf(TEXT("  %s: %.1f"), *Criterion.Name, Criterion.Value));
+		}
 	}
 }
