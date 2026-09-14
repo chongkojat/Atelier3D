@@ -50,8 +50,8 @@ Furniture is selected and placed in **groups**, not as individual objects — a 
 
 Hard constraints (overlapping clearance volumes, blocked doors, unreachable zones) reject a candidate outright. Remaining candidates are scored on weighted soft criteria:
 
-* **Clearance** — no overlapping clearance volumes; circulation gaps at or above 900 mm on primary paths
-* **Circulation** — every functional zone reachable from every door without obstruction
+* **Clearance** — no overlapping clearance volumes; circulation gaps at or above 900 mm on primary paths, 600 mm on secondary paths
+* **Circulation** — path directness and absence of pinch points between doors and functional zones
 * **Alignment** — large items flush and parallel to walls where the style expects it
 * **Grouping** — correct pairing and spacing within a group
 * **Focal relationships** — seating oriented toward each other or toward a focal point
