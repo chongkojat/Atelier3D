@@ -65,8 +65,6 @@ This is the central design decision of the project: it is how generated output c
 
 ### Evaluation criteria
 
-Layouts are scored against interior-design guidelines drawn from published work on automated furniture layout (Merrell et al. 2011; Yu et al. 2011; Kán & Kaufmann 2018) and from composition principles:
-
 - **Clearance** : no overlapping clearance volumes; circulation gaps at or above 900 mm on primary paths
 - **Circulation** : every functional zone reachable from every door without obstruction
 - **Alignment** : large items flush and parallel to walls where the style expects it
