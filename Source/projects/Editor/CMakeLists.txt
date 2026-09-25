@@ -15,3 +15,5 @@ target_include_directories(GAM300Editor
 
 target_link_libraries(GAM300Editor PRIVATE GAM300Engine)
 
+gam300_enable_warnings(GAM300Editor)
+

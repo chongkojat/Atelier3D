@@ -69,3 +69,14 @@ target_compile_definitions(GAM300Engine
     PUBLIC
         GAM300_ROOT_DIR="${GAM300_ROOT_DIR}"
 )
+
+gam300_enable_warnings(GAM300Engine)
+
+# Third-party sources compiled into the engine: silence their warnings so reports only show our code
+if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    set_source_files_properties(
+        ${GAM300_IMGUI_SOURCES}
+        "${GAM300_LIBRARIES_DIR}/include/imgui/backends/imgui_impl_glfw.cpp"
+        PROPERTIES COMPILE_OPTIONS "-w"
+    )
+endif ()

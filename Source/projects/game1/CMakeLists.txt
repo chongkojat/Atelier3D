@@ -15,3 +15,5 @@ target_include_directories(GAM300GamePyramid
 
 target_link_libraries(GAM300GamePyramid PRIVATE GAM300Engine)
 
+gam300_enable_warnings(GAM300GamePyramid)
+

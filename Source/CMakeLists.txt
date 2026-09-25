@@ -29,7 +29,22 @@ set(CMAKE_C_FLAGS_PACKAGE     "${CMAKE_C_FLAGS_RELEASE}"     CACHE STRING "" FOR
 set(CMAKE_CXX_FLAGS_PACKAGE   "${CMAKE_CXX_FLAGS_RELEASE}"   CACHE STRING "" FORCE)
 set(CMAKE_EXE_LINKER_FLAGS_PACKAGE "${CMAKE_EXE_LINKER_FLAGS_RELEASE}" CACHE STRING "" FORCE)
 
+# Compiler warnings for our own targets (reported by CI)
+function(gam300_enable_warnings target)
+  if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(${target} PRIVATE -Wall -Wextra)
+  endif ()
+endfunction()
+
+option(GAM300_BUILD_TESTS "Build the unit tests in tests/" ON)
+
 add_subdirectory ("projects/Engine")
 add_subdirectory ("projects/Editor")
 add_subdirectory ("projects/game")
 add_subdirectory ("projects/game1")
+
+# Unit tests run on the build machine, so skip them when cross-compiling
+if (GAM300_BUILD_TESTS AND NOT CMAKE_CROSSCOMPILING)
+  enable_testing()
+  add_subdirectory ("tests")
+endif ()
