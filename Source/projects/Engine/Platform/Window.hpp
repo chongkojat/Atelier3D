@@ -25,6 +25,9 @@ namespace Engine::Platform
         virtual int Width() const = 0;
         virtual int Height() const = 0;
         virtual const std::string& Title() const = 0;
+
+        // Platform window handle (GLFWwindow* on non-Windows), or nullptr if there is none
+        virtual void* NativeHandle() const { return nullptr; }
     };
 
     std::unique_ptr<Window> CreateWindow(const WindowSpec& spec);

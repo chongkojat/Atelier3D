@@ -9,9 +9,15 @@
 #include "Editor/Panels/Inspector/InspectorPanel.hpp"
 #include "Editor/Panels/SceneView/SceneViewPanel.hpp"
 
+#ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 #include <Windows.h>
+#ifdef CreateWindow
+#undef CreateWindow
+#endif
+#endif
+
 #include <GL/gl.h>
 
 #include <imgui/imgui.h>
@@ -55,8 +61,9 @@ namespace Editor
 
         void OnUpdate(double deltaSeconds) override
         {
-            const bool f5Down = (GetAsyncKeyState(VK_F5) & 0x8000) != 0;
-            if (f5Down && !f5WasDown_)
+            imgui_.BeginFrame(GetWindow(), deltaSeconds);
+
+            if (ImGui::IsKeyPressed(ImGuiKey_F5, false))
             {
                 if (isPlaying_)
                 {
@@ -67,9 +74,7 @@ namespace Editor
                     StartPlay();
                 }
             }
-            f5WasDown_ = f5Down;
 
-            imgui_.BeginFrame(GetWindow(), deltaSeconds);
             DrawProjectPickerUI();
 
             if (gameRuntime_ && isPlaying_)
@@ -262,7 +267,6 @@ namespace Editor
         Engine::ImGuiLayer::ImGuiLayer imgui_;
         std::unique_ptr<Engine::Game::GameRuntime> gameRuntime_;
         bool isPlaying_ = false;
-        bool f5WasDown_ = false;
         std::vector<std::filesystem::path> availableProjectDirs_;
         std::vector<std::string> availableProjectNames_;
         std::filesystem::path selectedProjectDir_;

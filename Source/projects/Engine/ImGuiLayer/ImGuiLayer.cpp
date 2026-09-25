@@ -10,6 +10,9 @@
 #ifdef CreateWindow
 #undef CreateWindow
 #endif
+#else
+#include <GLFW/glfw3.h>
+#include <imgui/backends/imgui_impl_glfw.h>
 #endif
 
 #include <GL/gl.h>
@@ -22,6 +25,9 @@ namespace Engine::ImGuiLayer
     {
         bool g_initialized = false;
         GLuint g_fontTexture = 0;
+#ifndef _WIN32
+        bool g_glfwBackend = false;
+#endif
 
         void CreateFontsTexture()
         {
@@ -230,6 +236,10 @@ namespace Engine::ImGuiLayer
             case VK_APPS: return ImGuiKey_Menu;
             }
 
+            if (wParam >= VK_F1 && wParam <= VK_F12)
+            {
+                return static_cast<ImGuiKey>(ImGuiKey_F1 + (wParam - VK_F1));
+            }
             if (wParam >= '0' && wParam <= '9')
             {
                 return static_cast<ImGuiKey>(ImGuiKey_0 + (wParam - '0'));
@@ -255,7 +265,16 @@ namespace Engine::ImGuiLayer
         ImGui::CreateContext();
 
         ImGuiIO& io = ImGui::GetIO();
+#ifdef _WIN32
         io.BackendPlatformName = "GAM300_Win32";
+#else
+        // Input comes from the official GLFW backend; rendering stays on our OpenGL1 renderer
+        if (auto* glfwWindow = static_cast<GLFWwindow*>(window.NativeHandle()))
+        {
+            ImGui_ImplGlfw_InitForOpenGL(glfwWindow, true);
+            g_glfwBackend = true;
+        }
+#endif
         io.BackendRendererName = "GAM300_OpenGL1";
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 
@@ -275,6 +294,13 @@ namespace Engine::ImGuiLayer
         }
 
         DestroyFontsTexture();
+#ifndef _WIN32
+        if (g_glfwBackend)
+        {
+            ImGui_ImplGlfw_Shutdown();
+            g_glfwBackend = false;
+        }
+#endif
         ImGui::DestroyContext();
         g_initialized = false;
     }
@@ -289,6 +315,13 @@ namespace Engine::ImGuiLayer
         ImGuiIO& io = ImGui::GetIO();
         io.DisplaySize = ImVec2(static_cast<float>(window.Width()), static_cast<float>(window.Height()));
         io.DeltaTime = static_cast<float>(std::max(deltaSeconds, 1.0 / 1000.0));
+
+#ifndef _WIN32
+        if (g_glfwBackend)
+        {
+            ImGui_ImplGlfw_NewFrame();
+        }
+#endif
 
         ImGui::NewFrame();
     }

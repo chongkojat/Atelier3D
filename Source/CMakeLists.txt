@@ -9,6 +9,11 @@ if (POLICY CMP0141)
   set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
 endif()
 
+# Use archive timestamps as extraction time for FetchContent downloads
+if (POLICY CMP0135)
+  cmake_policy(SET CMP0135 NEW)
+endif()
+
 project ("GAM300" LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -29,7 +34,7 @@ set(CMAKE_C_FLAGS_PACKAGE     "${CMAKE_C_FLAGS_RELEASE}"     CACHE STRING "" FOR
 set(CMAKE_CXX_FLAGS_PACKAGE   "${CMAKE_CXX_FLAGS_RELEASE}"   CACHE STRING "" FORCE)
 set(CMAKE_EXE_LINKER_FLAGS_PACKAGE "${CMAKE_EXE_LINKER_FLAGS_RELEASE}" CACHE STRING "" FORCE)
 
-add_subdirectory ("projects/engine")
-add_subdirectory ("projects/editor")
+add_subdirectory ("projects/Engine")
+add_subdirectory ("projects/Editor")
 add_subdirectory ("projects/game")
 add_subdirectory ("projects/game1")

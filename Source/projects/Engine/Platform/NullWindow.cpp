@@ -2,6 +2,8 @@
 
 #ifdef _WIN32
 #include "Engine/Platform/WindowsWindow.hpp"
+#else
+#include "Engine/Platform/GlfwWindow.hpp"
 #endif
 
 namespace Engine::Platform
@@ -41,7 +43,7 @@ namespace Engine::Platform
 #ifdef _WIN32
         return std::make_unique<WindowsWindow>(spec);
 #else
-        return std::make_unique<NullWindow>(spec);
+        return std::make_unique<GlfwWindow>(spec);
 #endif
     }
 }
