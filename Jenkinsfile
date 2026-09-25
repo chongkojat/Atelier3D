@@ -46,6 +46,12 @@ pipeline {
             }
         }
 
+        stage('Build Linux (Release)') {
+            steps {
+                sh 'bash tools/ci/build.sh Release linux'
+            }
+        }
+
         stage('Build Windows (Release)') {
             steps {
                 // Cross-compiles native Windows .exe files with MinGW-w64
@@ -53,10 +59,12 @@ pipeline {
             }
         }
 
-        stage('Package Windows') {
+        stage('Package') {
             steps {
-                sh 'bash tools/ci/package-windows.sh Release'
-                archiveArtifacts artifacts: 'build/dist/*.zip', fingerprint: true
+                sh 'bash tools/ci/package.sh Release linux'
+                sh 'bash tools/ci/package.sh Release windows'
+                // Downloadable from the build page under "Build Artifacts"
+                archiveArtifacts artifacts: 'build/dist/*.tar.gz, build/dist/*.zip', fingerprint: true
             }
         }
     }
