@@ -38,6 +38,10 @@ else ()
     # GLFW 3.4 is built from source to match the bundled 3.4 headers
     # (Ubuntu's libglfw3-dev is 3.3, which would fail to link)
     include(FetchContent)
+    # Use extraction time as file timestamps for downloaded archives
+    if (POLICY CMP0135)
+        cmake_policy(SET CMP0135 NEW)
+    endif ()
     set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
     set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
     set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)

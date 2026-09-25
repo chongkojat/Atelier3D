@@ -21,10 +21,17 @@ namespace GamePyramid
         {
             runtime_ = std::make_unique<Engine::Game::GameRuntime>();
 
+            // Packaged build: projects/ sits next to the exe
+            auto projectDir = std::filesystem::current_path() / "projects" / "game1";
 #if defined(GAM300_ROOT_DIR)
-            const auto projectDir = std::filesystem::path(GAM300_ROOT_DIR) / "projects" / "game_pyramid";
-            runtime_->LoadProject(Engine::Game::GameProject(projectDir));
+            // Source tree the exe was built from (only exists on the build machine)
+            const auto fromBuild = std::filesystem::path(GAM300_ROOT_DIR) / "projects" / "game1";
+            if (std::filesystem::exists(fromBuild))
+            {
+                projectDir = fromBuild;
+            }
 #endif
+            runtime_->LoadProject(Engine::Game::GameProject(projectDir));
 
             runtime_->Start();
         }

@@ -2,8 +2,10 @@
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
+#ifndef NOMINMAX
 #define NOMINMAX
-#include <Windows.h>
+#endif
+#include <windows.h>
 #ifdef CreateWindow
 #undef CreateWindow
 #endif

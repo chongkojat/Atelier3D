@@ -1,7 +1,8 @@
 // Atelier3D CI pipeline
 // Builds the CMake project in Source/ on every change to main and reports failures.
 pipeline {
-    // Runs on the Ubuntu Jenkins node (needs build-essential, cmake, ninja-build, libgl1-mesa-dev, xorg-dev)
+    // Runs on the Ubuntu Jenkins node
+    // (needs build-essential, cmake, ninja-build, libgl1-mesa-dev, xorg-dev, mingw-w64)
     agent any
 
     options {
@@ -24,22 +25,23 @@ pipeline {
             }
         }
 
-        stage('Build Debug') {
+        stage('Build Linux (Debug)') {
             steps {
-                sh 'bash tools/ci/build.sh Debug'
+                sh 'bash tools/ci/build.sh Debug linux'
             }
         }
 
-        stage('Build Release') {
+        stage('Build Windows (Release)') {
             steps {
-                sh 'bash tools/ci/build.sh Release'
+                // Cross-compiles native Windows .exe files with MinGW-w64
+                sh 'bash tools/ci/build.sh Release windows'
             }
         }
 
-        stage('Archive') {
+        stage('Package Windows') {
             steps {
-                archiveArtifacts artifacts: 'build/ci-Release/projects/*/GAM300*',
-                                 fingerprint: true
+                sh 'bash tools/ci/package-windows.sh Release'
+                archiveArtifacts artifacts: 'build/dist/*.zip', fingerprint: true
             }
         }
     }

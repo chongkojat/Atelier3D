@@ -11,8 +11,10 @@
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
+#ifndef NOMINMAX
 #define NOMINMAX
-#include <Windows.h>
+#endif
+#include <windows.h>
 #ifdef CreateWindow
 #undef CreateWindow
 #endif
@@ -112,10 +114,15 @@ namespace Editor
         static std::filesystem::path ProjectsRoot()
         {
 #if defined(GAM300_ROOT_DIR)
-            return std::filesystem::path(GAM300_ROOT_DIR) / "projects";
-#else
-            return std::filesystem::current_path() / "projects";
+            // Source tree the exe was built from (only exists on the build machine)
+            const auto fromBuild = std::filesystem::path(GAM300_ROOT_DIR) / "projects";
+            if (std::filesystem::exists(fromBuild))
+            {
+                return fromBuild;
+            }
 #endif
+            // Packaged build: projects/ sits next to the exe
+            return std::filesystem::current_path() / "projects";
         }
 
         void RefreshProjectList()
