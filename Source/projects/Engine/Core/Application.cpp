@@ -16,7 +16,7 @@ namespace Engine::Core
 
     void Application::Run()
     {
-        OnInit()
+        OnInit();
 
         auto last = Time::Now();
 
