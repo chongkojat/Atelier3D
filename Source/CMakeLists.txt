@@ -15,6 +15,9 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# compile_commands.json in the build directory, used by clang-tidy (tools/ci/lint.sh)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 set(GAM300_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 set(GAM300_PROJECTS_DIR "${GAM300_ROOT_DIR}/projects")
 set(GAM300_LIBRARIES_DIR "${GAM300_ROOT_DIR}/libraries")

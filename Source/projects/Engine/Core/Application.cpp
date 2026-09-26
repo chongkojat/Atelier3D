@@ -9,10 +9,7 @@ namespace Engine::Core
     {
     }
 
-    Application::~Application()
-    {
-        OnShutdown();
-    }
+    Application::~Application() = default;
 
     void Application::Run()
     {
@@ -37,6 +34,9 @@ namespace Engine::Core
                 Close();
             }
         }
+
+        // Called here rather than in ~Application(), where the derived override would no longer be reachable
+        OnShutdown();
     }
 
     void Application::Close()

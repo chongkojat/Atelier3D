@@ -13,15 +13,9 @@ namespace Engine::Scene
 
     void Scene::DestroyEntity(Entity entity)
     {
-        entities_.erase(
-            std::remove_if(
-                entities_.begin(),
-                entities_.end(),
-                [entity](const Entity& e)
-                {
-                    return e.GetId() == entity.GetId();
-                }),
-            entities_.end());
+        entities_.erase(std::remove_if(entities_.begin(), entities_.end(),
+                                       [entity](const Entity& e) { return e.GetId() == entity.GetId(); }),
+                        entities_.end());
     }
 
     const std::vector<Entity>& Scene::Entities() const

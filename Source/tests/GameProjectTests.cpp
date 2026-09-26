@@ -42,10 +42,7 @@ namespace
             std::filesystem::create_directories(projectDir_);
         }
 
-        void TearDown() override
-        {
-            std::filesystem::remove_all(projectDir_);
-        }
+        void TearDown() override { std::filesystem::remove_all(projectDir_); }
 
         void WriteScene(const std::string& contents) const
         {
@@ -54,10 +51,7 @@ namespace
             std::ofstream(scenes / "Default.scene") << contents;
         }
 
-        SceneDescription Load() const
-        {
-            return GameProject(projectDir_).LoadDefaultScene();
-        }
+        SceneDescription Load() const { return GameProject(projectDir_).LoadDefaultScene(); }
 
         std::filesystem::path projectDir_;
     };

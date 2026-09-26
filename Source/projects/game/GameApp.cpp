@@ -8,10 +8,9 @@ namespace Game
     {
     public:
         GameApp()
-            : Engine::Core::Application(
-                  Engine::Core::ApplicationSpec{
-                      .window = Engine::Platform::WindowSpec{.width = 1280, .height = 720, .title = "Game"},
-                      .maxFrames = 0})
+            : Engine::Core::Application(Engine::Core::ApplicationSpec{
+                  .window = Engine::Platform::WindowSpec{.width = 1280, .height = 720, .title = "Game"},
+                  .maxFrames = 0})
         {
         }
 
@@ -23,10 +22,7 @@ namespace Game
             runtime_->Start();
         }
 
-        void OnUpdate(double deltaSeconds) override
-        {
-            runtime_->Tick(deltaSeconds, GetWindow());
-        }
+        void OnUpdate(double deltaSeconds) override { runtime_->Tick(deltaSeconds, GetWindow()); }
 
     private:
         std::unique_ptr<Engine::Game::GameRuntime> runtime_;
@@ -39,4 +35,3 @@ int main()
     app.Run();
     return 0;
 }
-

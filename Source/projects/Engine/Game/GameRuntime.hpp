@@ -32,4 +32,3 @@ namespace Engine::Game
         float cubeAngleDegrees_ = 0.0f;
     };
 }
-

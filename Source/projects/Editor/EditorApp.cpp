@@ -35,10 +35,9 @@ namespace Editor
     {
     public:
         EditorApp()
-            : Engine::Core::Application(
-                  Engine::Core::ApplicationSpec{
-                      .window = Engine::Platform::WindowSpec{.width = 1280, .height = 720, .title = "Editor"},
-                      .maxFrames = 0})
+            : Engine::Core::Application(Engine::Core::ApplicationSpec{
+                  .window = Engine::Platform::WindowSpec{.width = 1280, .height = 720, .title = "Editor"},
+                  .maxFrames = 0})
         {
         }
 

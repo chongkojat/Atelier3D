@@ -2,7 +2,8 @@
 // Builds the CMake project in Source/ on every change to main and reports failures.
 pipeline {
     // Runs on the Ubuntu Jenkins node
-    // (needs build-essential, cmake, ninja-build, libgl1-mesa-dev, xorg-dev, mingw-w64, cppcheck)
+    // (needs build-essential, cmake, ninja-build, libgl1-mesa-dev, xorg-dev, mingw-w64, cppcheck,
+    //  clang-format, clang-tidy)
     // Jenkins plugins: Pipeline, Git, Timestamper, JUnit, Warnings (warnings-ng)
     agent any
 
@@ -36,6 +37,14 @@ pipeline {
             steps {
                 // GoogleTest suite in Source/tests; any failing test fails the build
                 sh 'bash tools/ci/test.sh Debug'
+            }
+        }
+
+        stage('Lint') {
+            steps {
+                // clang-format (code style, .clang-format) and clang-tidy (code lint, .clang-tidy) on our code;
+                // fails on unformatted files or bugprone/analyzer findings, reports the rest
+                sh 'bash tools/ci/lint.sh Debug'
             }
         }
 
@@ -74,10 +83,12 @@ pipeline {
             // Test results: "Test Result" page and trend chart on the job page
             junit testResults: 'build/reports/tests.xml', allowEmptyResults: true
 
-            // Compiler warnings (from the console log) and cppcheck findings:
-            // "GCC Warnings" and "CPPCheck Warnings" pages and trend charts
+            // Compiler warnings (from the console log), cppcheck, clang-tidy and clang-format findings:
+            // "GCC Warnings", "CPPCheck Warnings", "Clang-Tidy Warnings" and "clang-format" pages and trend charts
             recordIssues enabledForFailure: true,
-                         tools: [gcc(), cppCheck(pattern: 'build/reports/cppcheck.xml')],
+                         tools: [gcc(), cppCheck(pattern: 'build/reports/cppcheck.xml'),
+                                 clangTidy(pattern: 'build/reports/clang-tidy.txt'),
+                                 clang(pattern: 'build/reports/clang-format.txt', id: 'clang-format', name: 'clang-format')],
                          filters: [excludeFile('.*/_deps/.*')]
         }
         success {

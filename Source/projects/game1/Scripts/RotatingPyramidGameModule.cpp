@@ -7,4 +7,3 @@ namespace GamePyramid::Scripts
         Engine::Core::Log(Engine::Core::LogLevel::Info, "RotatingPyramidGameModule loaded");
     }
 }
-

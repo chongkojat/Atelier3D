@@ -1,0 +1,30 @@
+# Lint rules for our own C++ code (Source/projects, Source/tests)
+# Checked in CI by tools/ci/lint.sh
+#   performance-unnecessary-value-param is off: clang-tidy 21 crashes in it on GCC 15's <functional>
+#   bugprone-* and clang-analyzer-* are treated as errors (likely bugs) and fail the build;
+#   the other checks are reported as warnings on the "Clang-Tidy Warnings" page in Jenkins
+Checks: >
+  -*,
+  bugprone-*,
+  -bugprone-easily-swappable-parameters,
+  clang-analyzer-*,
+  performance-*,
+  -performance-unnecessary-value-param,
+  modernize-use-override,
+  modernize-use-nullptr,
+  modernize-use-emplace,
+  modernize-loop-convert,
+  modernize-make-unique,
+  modernize-make-shared,
+  readability-container-size-empty,
+  readability-redundant-string-cstr,
+  readability-inconsistent-declaration-parameter-name,
+  readability-misleading-indentation,
+  readability-braces-around-statements,
+  misc-redundant-expression,
+  misc-unused-using-decls,
+  misc-definitions-in-headers
+WarningsAsErrors: 'bugprone-*,clang-analyzer-*'
+# Only report findings in our headers, not third-party ones under Source/libraries or _deps
+HeaderFilterRegex: '.*/Source/(projects|tests)/.*'
+FormatStyle: file

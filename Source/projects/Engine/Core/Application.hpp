@@ -35,4 +35,4 @@ namespace Engine::Core
         bool running_ = true;
         int frameCount_ = 0;
     };
-} 
+}

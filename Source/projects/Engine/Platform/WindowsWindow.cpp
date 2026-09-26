@@ -115,7 +115,8 @@ namespace Engine::Platform
 
     LRESULT WindowsWindow::HandleMessage(UINT msg, WPARAM wParam, LPARAM lParam)
     {
-        Engine::ImGuiLayer::HandleWin32Message(hwnd_, msg, static_cast<std::uintptr_t>(wParam), static_cast<std::intptr_t>(lParam));
+        Engine::ImGuiLayer::HandleWin32Message(hwnd_, msg, static_cast<std::uintptr_t>(wParam),
+                                               static_cast<std::intptr_t>(lParam));
 
         switch (msg)
         {
@@ -164,8 +165,7 @@ namespace Engine::Platform
             window->hwnd_ = hwnd;
         }
 
-        auto* window =
-            reinterpret_cast<WindowsWindow*>(GetWindowLongPtrW(hwnd, GWLP_USERDATA));
+        auto* window = reinterpret_cast<WindowsWindow*>(GetWindowLongPtrW(hwnd, GWLP_USERDATA));
         if (window)
         {
             return window->HandleMessage(msg, wParam, lParam);
@@ -195,19 +195,8 @@ namespace Engine::Platform
         const int width = rect.right - rect.left;
         const int height = rect.bottom - rect.top;
 
-        hwnd_ = CreateWindowExW(
-            0,
-            kWindowClassName,
-            ToWide(spec_.title).c_str(),
-            style,
-            CW_USEDEFAULT,
-            CW_USEDEFAULT,
-            width,
-            height,
-            nullptr,
-            nullptr,
-            hInstance,
-            this);
+        hwnd_ = CreateWindowExW(0, kWindowClassName, ToWide(spec_.title).c_str(), style, CW_USEDEFAULT, CW_USEDEFAULT,
+                                width, height, nullptr, nullptr, hInstance, this);
 
         if (!hwnd_)
         {

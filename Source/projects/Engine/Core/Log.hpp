@@ -16,15 +16,9 @@ namespace Engine::Core
     {
         switch (level)
         {
-        case LogLevel::Info:
-            std::cout << "[Info] ";
-            break;
-        case LogLevel::Warning:
-            std::cout << "[Warn] ";
-            break;
-        case LogLevel::Error:
-            std::cerr << "[Error] ";
-            break;
+        case LogLevel::Info: std::cout << "[Info] "; break;
+        case LogLevel::Warning: std::cout << "[Warn] "; break;
+        case LogLevel::Error: std::cerr << "[Error] "; break;
         }
 
         if (level == LogLevel::Error)

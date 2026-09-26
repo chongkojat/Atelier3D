@@ -75,8 +75,7 @@ namespace Engine::ImGuiLayer
             glPushMatrix();
             glLoadIdentity();
             glOrtho(drawData->DisplayPos.x, drawData->DisplayPos.x + drawData->DisplaySize.x,
-                    drawData->DisplayPos.y + drawData->DisplaySize.y, drawData->DisplayPos.y,
-                    -1.0f, 1.0f);
+                    drawData->DisplayPos.y + drawData->DisplaySize.y, drawData->DisplayPos.y, -1.0f, 1.0f);
             glMatrixMode(GL_MODELVIEW);
             glPushMatrix();
             glLoadIdentity();
@@ -146,25 +145,23 @@ namespace Engine::ImGuiLayer
                         clipRect.z = (pcmd->ClipRect.z - clipOff.x) * clipScale.x;
                         clipRect.w = (pcmd->ClipRect.w - clipOff.y) * clipScale.y;
 
-                        if (clipRect.x < fbWidth && clipRect.y < fbHeight && clipRect.z >= 0.0f && clipRect.w >= 0.0f)
+                        if (clipRect.x < static_cast<float>(fbWidth) && clipRect.y < static_cast<float>(fbHeight) &&
+                            clipRect.z >= 0.0f && clipRect.w >= 0.0f)
                         {
-                            glScissor(
-                                static_cast<int>(clipRect.x),
-                                static_cast<int>(fbHeight - clipRect.w),
-                                static_cast<int>(clipRect.z - clipRect.x),
-                                static_cast<int>(clipRect.w - clipRect.y));
+                            glScissor(static_cast<int>(clipRect.x),
+                                      static_cast<int>(static_cast<float>(fbHeight) - clipRect.w),
+                                      static_cast<int>(clipRect.z - clipRect.x),
+                                      static_cast<int>(clipRect.w - clipRect.y));
 
                             const GLuint texture = static_cast<GLuint>(pcmd->GetTexID());
                             glBindTexture(GL_TEXTURE_2D, texture);
 
 #if defined(IMGUI_USE_BGRA_PACKED_COLOR)
                             glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(pcmd->ElemCount),
-                                           sizeof(ImDrawIdx) == 2 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT,
-                                           idxBuffer);
+                                           sizeof(ImDrawIdx) == 2 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT, idxBuffer);
 #else
                             glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(pcmd->ElemCount),
-                                           sizeof(ImDrawIdx) == 2 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT,
-                                           idxBuffer);
+                                           sizeof(ImDrawIdx) == 2 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT, idxBuffer);
 #endif
                         }
                     }
@@ -376,10 +373,12 @@ namespace Engine::ImGuiLayer
             ReleaseCapture();
             return true;
         case WM_MOUSEWHEEL:
-            io.AddMouseWheelEvent(0.0f, static_cast<float>(GET_WHEEL_DELTA_WPARAM(wParam)) / static_cast<float>(WHEEL_DELTA));
+            io.AddMouseWheelEvent(0.0f,
+                                  static_cast<float>(GET_WHEEL_DELTA_WPARAM(wParam)) / static_cast<float>(WHEEL_DELTA));
             return true;
         case WM_MOUSEHWHEEL:
-            io.AddMouseWheelEvent(static_cast<float>(GET_WHEEL_DELTA_WPARAM(wParam)) / static_cast<float>(WHEEL_DELTA), 0.0f);
+            io.AddMouseWheelEvent(static_cast<float>(GET_WHEEL_DELTA_WPARAM(wParam)) / static_cast<float>(WHEEL_DELTA),
+                                  0.0f);
             return true;
         case WM_MOUSEMOVE:
             io.AddMousePosEvent(static_cast<float>(GET_X_LPARAM(lParam)), static_cast<float>(GET_Y_LPARAM(lParam)));
@@ -395,7 +394,8 @@ namespace Engine::ImGuiLayer
             io.AddKeyEvent(ImGuiKey_ModCtrl, (GetKeyState(VK_CONTROL) & 0x8000) != 0);
             io.AddKeyEvent(ImGuiKey_ModShift, (GetKeyState(VK_SHIFT) & 0x8000) != 0);
             io.AddKeyEvent(ImGuiKey_ModAlt, (GetKeyState(VK_MENU) & 0x8000) != 0);
-            io.AddKeyEvent(ImGuiKey_ModSuper, (GetKeyState(VK_LWIN) & 0x8000) != 0 || (GetKeyState(VK_RWIN) & 0x8000) != 0);
+            io.AddKeyEvent(ImGuiKey_ModSuper,
+                           (GetKeyState(VK_LWIN) & 0x8000) != 0 || (GetKeyState(VK_RWIN) & 0x8000) != 0);
             return true;
         }
         case WM_KEYUP:
@@ -409,12 +409,11 @@ namespace Engine::ImGuiLayer
             io.AddKeyEvent(ImGuiKey_ModCtrl, (GetKeyState(VK_CONTROL) & 0x8000) != 0);
             io.AddKeyEvent(ImGuiKey_ModShift, (GetKeyState(VK_SHIFT) & 0x8000) != 0);
             io.AddKeyEvent(ImGuiKey_ModAlt, (GetKeyState(VK_MENU) & 0x8000) != 0);
-            io.AddKeyEvent(ImGuiKey_ModSuper, (GetKeyState(VK_LWIN) & 0x8000) != 0 || (GetKeyState(VK_RWIN) & 0x8000) != 0);
+            io.AddKeyEvent(ImGuiKey_ModSuper,
+                           (GetKeyState(VK_LWIN) & 0x8000) != 0 || (GetKeyState(VK_RWIN) & 0x8000) != 0);
             return true;
         }
-        case WM_CHAR:
-            io.AddInputCharacter(static_cast<unsigned int>(wParam));
-            return true;
+        case WM_CHAR: io.AddInputCharacter(static_cast<unsigned int>(wParam)); return true;
         }
 
         return false;

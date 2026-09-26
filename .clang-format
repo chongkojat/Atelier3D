@@ -1,0 +1,20 @@
+# Code style for our own C++ code (Source/projects, Source/tests)
+# Checked in CI by tools/ci/lint.sh; format a file locally with: clang-format -i <file>
+BasedOnStyle: Microsoft
+Language: Cpp
+Standard: c++20
+IndentWidth: 4
+UseTab: Never
+ColumnLimit: 120
+BreakBeforeBraces: Allman
+NamespaceIndentation: All
+AccessModifierOffset: -4
+PointerAlignment: Left
+ReferenceAlignment: Left
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+FixNamespaceComments: false
+SortIncludes: CaseSensitive
+IncludeBlocks: Preserve
