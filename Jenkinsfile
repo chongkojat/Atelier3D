@@ -93,8 +93,10 @@ pipeline {
             junit testResults: 'apps/desktop/build/reports/tests.xml', allowEmptyResults: true
 
             // Compiler warnings (from the console log), cppcheck, clang-tidy and clang-format findings:
-            // "GCC Warnings", "CPPCheck Warnings", "Clang-Tidy Warnings" and "clang-format" pages and trend charts
+            // "GCC Warnings", "CPPCheck Warnings", "Clang-Tidy Warnings" and "clang-format" pages (each with its own
+            // trend chart), plus one combined trend chart on the job page so the Stage View stays near the top
             recordIssues enabledForFailure: true,
+                         trendChartType: 'AGGREGATION_ONLY',
                          tools: [gcc(), cppCheck(pattern: 'apps/desktop/build/reports/cppcheck.xml'),
                                  clangTidy(pattern: 'apps/desktop/build/reports/clang-tidy.txt'),
                                  clang(pattern: 'apps/desktop/build/reports/clang-format.txt', id: 'clang-format', name: 'clang-format')],
