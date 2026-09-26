@@ -10,15 +10,17 @@ set -euo pipefail
 CONFIG="${1:-Release}"
 TARGET="${2:-linux}"
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+# The desktop app is the CMake project
+SOURCE_DIR="$ROOT/apps/desktop"
 
 EXTRA_ARGS=()
 case "$TARGET" in
     linux)
-        BUILD_DIR="$ROOT/build/ci-$CONFIG"
+        BUILD_DIR="$ROOT/apps/desktop/build/ci-$CONFIG"
         ;;
     windows)
-        BUILD_DIR="$ROOT/build/ci-windows-$CONFIG"
-        EXTRA_ARGS=(-DCMAKE_TOOLCHAIN_FILE="$ROOT/Source/cmake/mingw-w64-x86_64.cmake")
+        BUILD_DIR="$ROOT/apps/desktop/build/ci-windows-$CONFIG"
+        EXTRA_ARGS=(-DCMAKE_TOOLCHAIN_FILE="$SOURCE_DIR/cmake/mingw-w64-x86_64.cmake")
         ;;
     *)
         echo "ERROR: unknown target '$TARGET' (expected linux or windows)" >&2
@@ -39,7 +41,7 @@ if command -v ninja >/dev/null 2>&1; then
 fi
 
 echo "[1/2] Configuring..."
-cmake -S "$ROOT/Source" -B "$BUILD_DIR" -DCMAKE_BUILD_TYPE="$CONFIG" "${EXTRA_ARGS[@]}"
+cmake -S "$SOURCE_DIR" -B "$BUILD_DIR" -DCMAKE_BUILD_TYPE="$CONFIG" "${EXTRA_ARGS[@]}"
 
 echo "[2/2] Building..."
 cmake --build "$BUILD_DIR" --parallel

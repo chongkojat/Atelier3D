@@ -1,4 +1,4 @@
-# Lint rules for our own C++ code (Source/projects, Source/tests)
+# Lint rules for our own C++ code (apps/desktop/projects/, tests/)
 # Checked in CI by tools/ci/lint.sh
 #   performance-unnecessary-value-param is off: clang-tidy 21 crashes in it on GCC 15's <functional>
 #   bugprone-* and clang-analyzer-* are treated as errors (likely bugs) and fail the build;
@@ -25,6 +25,6 @@ Checks: >
   misc-unused-using-decls,
   misc-definitions-in-headers
 WarningsAsErrors: 'bugprone-*,clang-analyzer-*'
-# Only report findings in our headers, not third-party ones under Source/libraries or _deps
-HeaderFilterRegex: '.*/Source/(projects|tests)/.*'
+# Only report findings in our headers, not third-party ones under apps/desktop/libraries/ or _deps
+HeaderFilterRegex: '.*/(projects|tests)/.*'
 FormatStyle: file

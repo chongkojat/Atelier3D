@@ -2,7 +2,7 @@
 # ===============================================
 # Lints our own code (needs: apt install clang-format clang-tidy)
 # Usage: bash tools/ci/lint.sh [Debug|Release]   (run build.sh <config> linux first; clang-tidy reads its compile_commands.json)
-# Reports: build/reports/clang-format.txt, build/reports/clang-tidy.txt
+# Reports: apps/desktop/build/reports/clang-format.txt, apps/desktop/build/reports/clang-tidy.txt
 #   clang-format - fails if any file does not match .clang-format
 #                  (fix locally with: clang-format -i <file>)
 #   clang-tidy   - fails on bugprone-* / clang-analyzer-* findings (likely bugs, see .clang-tidy);
@@ -13,8 +13,8 @@ set -euo pipefail
 
 CONFIG="${1:-Debug}"
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-BUILD_DIR="$ROOT/build/ci-$CONFIG"
-REPORT_DIR="$ROOT/build/reports"
+BUILD_DIR="$ROOT/apps/desktop/build/ci-$CONFIG"
+REPORT_DIR="$ROOT/apps/desktop/build/reports"
 
 mkdir -p "$REPORT_DIR"
 
@@ -26,9 +26,9 @@ clang-tidy --version
 
 FAILED=0
 
-# Only our code is linted; third-party code under Source/libraries is skipped
-mapfile -t FILES < <(cd "$ROOT" && git ls-files -- 'Source/projects/*.cpp' 'Source/projects/*.hpp' 'Source/projects/*.h' \
-                                                   'Source/tests/*.cpp' 'Source/tests/*.hpp' 'Source/tests/*.h')
+# Only our code is linted; third-party code under apps/desktop/libraries/ is skipped
+mapfile -t FILES < <(cd "$ROOT" && git ls-files -- 'apps/desktop/projects/*.cpp' 'apps/desktop/projects/*.hpp' 'apps/desktop/projects/*.h' \
+                                                   'tests/*.cpp' 'tests/*.hpp' 'tests/*.h')
 
 echo "[1/2] clang-format (${#FILES[@]} files)..."
 if (cd "$ROOT" && clang-format --dry-run --Werror "${FILES[@]}") > "$REPORT_DIR/clang-format.txt" 2>&1; then
@@ -47,7 +47,7 @@ if [ ! -f "$BUILD_DIR/compile_commands.json" ]; then
 fi
 
 # The regex picks our .cpp files out of the compile database (headers are covered via HeaderFilterRegex)
-if run-clang-tidy -p "$BUILD_DIR" -quiet -j "$(nproc)" '/Source/(projects|tests)/.*\.cpp$' \
+if run-clang-tidy -p "$BUILD_DIR" -quiet -j "$(nproc)" "^$ROOT/(apps/desktop/projects|tests)/.*\\.cpp$" \
         > "$REPORT_DIR/clang-tidy.txt" 2>&1; then
     TIDY_OK=1
 else

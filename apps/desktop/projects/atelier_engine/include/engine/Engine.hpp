@@ -1,0 +1,15 @@
+#pragma once
+
+#include "engine/assets/AssetManager.hpp"
+#include "engine/core/Application.hpp"
+#include "engine/core/Log.hpp"
+#include "engine/core/Time.hpp"
+#include "engine/game/GameProject.hpp"
+#include "engine/game/GameRuntime.hpp"
+#include "engine/input/Input.hpp"
+#include "engine/physics/PhysicsWorld.hpp"
+#include "engine/platform/Paths.hpp"
+#include "engine/platform/Window.hpp"
+#include "engine/renderer/Renderer.hpp"
+#include "engine/scene/Scene.hpp"
+#include "engine/ui/ImGuiLayer.hpp"

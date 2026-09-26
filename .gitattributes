@@ -1,2 +1,5 @@
 # Shell scripts must keep LF endings or bash on Linux fails with "$'\r': command not found"
 *.sh text eol=lf
+
+# Batch files need CRLF endings or cmd.exe can misread labels and blocks
+*.bat text eol=crlf

@@ -9,7 +9,7 @@ set CONFIG=%~1
 if "%CONFIG%"=="" set CONFIG=Release
 
 set ROOT=%~dp0..\..
-set BUILD_DIR=%ROOT%\build\ci-%CONFIG%
+set BUILD_DIR=%ROOT%\apps\desktop\build\ci-%CONFIG%
 
 echo ===============================================
 echo   Atelier3D CI build - %CONFIG%
@@ -21,7 +21,7 @@ if exist "%BUILD_DIR%" rmdir /s /q "%BUILD_DIR%"
 
 echo [1/2] Configuring...
 REM No -G: CMake picks the newest installed Visual Studio generator
-cmake -S "%ROOT%\Source" -B "%BUILD_DIR%" -A x64
+cmake -S "%ROOT%\apps\desktop" -B "%BUILD_DIR%" -A x64
 if errorlevel 1 (
     echo ERROR: CMake configuration failed
     exit /b 1

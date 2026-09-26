@@ -1,4 +1,4 @@
-# Code style for our own C++ code (Source/projects, Source/tests)
+# Code style for our own C++ code (apps/desktop/projects/, tests/)
 # Checked in CI by tools/ci/lint.sh; format a file locally with: clang-format -i <file>
 BasedOnStyle: Microsoft
 Language: Cpp

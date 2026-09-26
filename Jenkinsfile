@@ -1,10 +1,11 @@
 // Atelier3D CI pipeline
-// Builds the CMake project in Source/ on every change to main and reports failures.
+// Builds the desktop app (CMake project in apps/desktop) on every change to main and reports failures.
 pipeline {
     // Runs on the Ubuntu Jenkins node
     // (needs build-essential, cmake, ninja-build, libgl1-mesa-dev, xorg-dev, mingw-w64, cppcheck,
     //  clang-format, clang-tidy)
     // Jenkins plugins: Pipeline, Git, Timestamper, JUnit, Warnings (warnings-ng)
+    // Must run on the Jenkins controller (built-in node): Publish Downloads writes to $JENKINS_HOME/userContent
     agent any
 
     options {
@@ -35,7 +36,7 @@ pipeline {
 
         stage('Unit Tests') {
             steps {
-                // GoogleTest suite in Source/tests; any failing test fails the build
+                // GoogleTest suite in tests/unit; any failing test fails the build
                 sh 'bash tools/ci/test.sh Debug'
             }
         }
@@ -72,8 +73,16 @@ pipeline {
             steps {
                 sh 'bash tools/ci/package.sh Release linux'
                 sh 'bash tools/ci/package.sh Release windows'
-                // Downloadable from the build page under "Build Artifacts"
-                archiveArtifacts artifacts: 'build/dist/*.tar.gz, build/dist/*.zip', fingerprint: true
+                // Downloadable from the build page under "Build Artifacts" (team only: needs Job/Read)
+                archiveArtifacts artifacts: 'apps/desktop/build/dist/*.tar.gz, apps/desktop/build/dist/*.zip', fingerprint: true
+            }
+        }
+
+        stage('Publish Downloads') {
+            steps {
+                // Public downloads for guests, who only need Overall/Read (no Job/Read, so no job page,
+                // stage view or trends): <jenkins>/userContent/atelier3d/ (history page with download links)
+                sh 'bash tools/ci/publish-downloads.sh "$JENKINS_HOME/userContent/atelier3d" "$BUILD_NUMBER"'
             }
         }
     }
@@ -81,15 +90,19 @@ pipeline {
     post {
         always {
             // Test results: "Test Result" page and trend chart on the job page
-            junit testResults: 'build/reports/tests.xml', allowEmptyResults: true
+            junit testResults: 'apps/desktop/build/reports/tests.xml', allowEmptyResults: true
 
             // Compiler warnings (from the console log), cppcheck, clang-tidy and clang-format findings:
             // "GCC Warnings", "CPPCheck Warnings", "Clang-Tidy Warnings" and "clang-format" pages and trend charts
             recordIssues enabledForFailure: true,
-                         tools: [gcc(), cppCheck(pattern: 'build/reports/cppcheck.xml'),
-                                 clangTidy(pattern: 'build/reports/clang-tidy.txt'),
-                                 clang(pattern: 'build/reports/clang-format.txt', id: 'clang-format', name: 'clang-format')],
+                         tools: [gcc(), cppCheck(pattern: 'apps/desktop/build/reports/cppcheck.xml'),
+                                 clangTidy(pattern: 'apps/desktop/build/reports/clang-tidy.txt'),
+                                 clang(pattern: 'apps/desktop/build/reports/clang-format.txt', id: 'clang-format', name: 'clang-format')],
                          filters: [excludeFile('.*/_deps/.*')]
+
+            // Public build history (every build, pass or fail); never fails the build itself
+            sh "bash tools/ci/publish-history.sh \"\$JENKINS_HOME/userContent/atelier3d\" \"\$BUILD_NUMBER\" ${currentBuild.currentResult} " +
+               "|| echo 'WARNING: could not update the public build history'"
         }
         success {
             echo "BUILD PASSED: ${env.JOB_NAME} #${env.BUILD_NUMBER}"

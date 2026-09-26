@@ -567,83 +567,112 @@ This architecture is what enables live execution highlighting and in-world debug
 
 ```text
 Atelier3D/
-├── Source/
-│   ├── Core/
-│   ├── Engine/
-│   ├── Renderer/
-│   ├── Editor/
-│   ├── Runtime/
-│   ├── Scripting/
-│   ├── Physics/
-│   ├── Audio/
-│   ├── Assets/
-│   └── UI/
-│
-├── Assets/
-│   ├── Models/
-│   ├── Textures/
-│   ├── Audio/
-│   └── Shaders/
-│
-├── Tests/
-│
-├── tools/
-│   └── ci/
+├── README.md
+├── Jenkinsfile                     # CI pipeline
 │
 ├── docs/
+│   ├── proposal.md
+│   ├── design/
+│   │   ├── product-design.md
+│   │   └── ui-ux/                  # Wireframes, user flows, mockups
+│   ├── architecture.md             # System architecture + technology stack
+│   └── deliverables.md             # Ownership + M1/M2/M3 targets
 │
-├── CMakeLists.txt
-└── README.md
+├── apps/
+│   ├── desktop/                    # The Atelier3D application (C++ source)
+│   │   ├── CMakeLists.txt          # CMake build
+│   │   ├── CMakePresets.json
+│   │   ├── run.bat / clean.bat     # Build/run helper scripts (Windows)
+│   │   ├── cmake/                  # Toolchain files (MinGW cross-compile)
+│   │   ├── libraries/              # Third-party dependencies
+│   │   │   ├── bin/                # DLLs (GLEW, gRPC, Lua)
+│   │   │   ├── include/            # GL, GLFW, glm, imgui, ImGuizmo, json, lua, sol2, stb, ...
+│   │   │   └── lib/
+│   │   └── projects/
+│   │       ├── atelier_engine/     # Engine library
+│   │       │   ├── include/engine/ # assets, core, game, input, physics, platform, renderer, scene, ui
+│   │       │   └── src/            # Mirrors include/engine/
+│   │       └── atelier_editor/     # Editor: create, pick and play games
+│   │           ├── include/editor/ # camera, commands, gizmos, panels
+│   │           └── src/
+│   ├── web/                        # Not used (desktop-only product)
+│   ├── mobile/                     # Not used
+│   └── server/                     # Not used
+│
+├── packages/                       # Shared packages (none yet)
+├── tools/
+│   └── ci/                         # Build, test, lint, analysis and packaging scripts
+├── tests/
+│   └── unit/                       # GoogleTest unit tests
+├── .github/
+│   └── workflows/                  # (CI runs on Jenkins, see Jenkinsfile)
+├── .gitignore
+└── .editorconfig
+```
+
+Games are created in a `projects` folder next to the editor executable (see "Creating a New Game"), and every game has the same layout:
+
+```text
+<folder of AtelierEditor.exe>/projects/<game>/
+├── configs/game.cfg                # Name, window size, start scene (marks the folder as a game)
+├── data/scenes/main.scene          # Scene: one object per line
+├── assets/                         # models, textures, materials, shaders, audio
+└── scripts/
 ```
 
 ---
 
 ## Quick Start
 
-Full setup instructions, prerequisites and troubleshooting:
-
-**[docs/setup.md](docs/setup.md)**
-
 ### Windows
 
-Requirements:
-
-- Visual Studio
-- Desktop development with C++ workload
-- CMake
-- Git
-
-Run from Developer PowerShell for Visual Studio:
+Requirements: Visual Studio with the **Desktop development with C++** workload, and Git. Run from **Developer PowerShell for VS**:
 
 ```powershell
 git clone https://github.com/L1nceLin/Atelier3D.git
-
-cd Atelier3D
-
-tools\ci\build.bat Debug
-
-build\ci-Debug\projects\Editor\Debug\GAM300Editor.exe
+cd Atelier3D\apps\desktop
+.\run.bat                      # build Debug and open the editor
+.\run.bat new my_game cube     # create a game without opening the editor
 ```
+
+`clean.bat` removes all build output. To open the code in Visual Studio, use **File → Open → Folder** on `apps\desktop`. For a clean build like CI's, run `tools\ci\build.bat Debug` from the repository root; it writes executables to `apps\desktop\build\ci-Debug\bin\Debug\`. All build output goes to `apps\desktop\build\`.
 
 ### Ubuntu
 
-Install the required dependencies:
-
 ```bash
 sudo apt install -y git build-essential cmake ninja-build libgl1-mesa-dev xorg-dev
+git clone https://github.com/L1nceLin/Atelier3D.git
+cd Atelier3D
+bash tools/ci/build.sh Debug linux
+./apps/desktop/build/ci-Debug/bin/AtelierEditor                                    # open the editor
+./apps/desktop/build/ci-Debug/bin/AtelierEditor --new-game my_game --template cube  # create a game
 ```
 
-Clone and build:
+---
+
+## Creating a New Game
+
+Games are folders of data, so a new game needs no C++ code and no CMake changes. The repository ships no games; the engine creates them.
+
+**In the editor:** in the *Game Project* window, type a name under **New Game**, pick a template (`empty`, `cube` or `pyramid`) and click **Create**. The game appears in the project list; press **Play (F5)** to run it.
+
+**From the command line:**
 
 ```bash
-git clone https://github.com/L1nceLin/Atelier3D.git
-
-cd Atelier3D
-
-bash tools/ci/build.sh Debug linux
-
-./build/ci-Debug/projects/Editor/GAM300Editor
+AtelierEditor --new-game my_game --template cube     # or, in apps/desktop: run.bat new my_game cube
 ```
+
+This creates `projects/my_game/` **next to the editor executable** (for example `apps\desktop\build\dev\bin\Debug\projects\my_game\` after `run.bat`); the `projects` folder is made with the first game. The editor lists every game in that folder. Add `--projects-dir <dir>` to create a game somewhere else. Edit `data/scenes/main.scene` to change what the game shows:
+
+```text
+# <cube|pyramid> [x=..] [y=..] [z=..] [rotation_speed=..]
+cube    x=-1.2 rotation_speed=45
+pyramid x=1.2  rotation_speed=-90
+```
+
+Game names use letters, digits, `_` and `-`.
+
+> **Games inside `build\` are deleted by `clean.bat` and by the CI build scripts**, which start from an empty build folder, and `build\` is not committed to Git. Copy games you want to keep, or share with the team, somewhere else.
 
 ---
 
@@ -659,6 +688,7 @@ The CI pipeline currently covers:
 - clang-format
 - clang-tidy
 - cppcheck
+- Packaging, plus a public download and build history page at `<jenkins>/userContent/atelier3d/`. Guests can use it without access to the Jenkins job itself.
 
 The Jenkins pipeline is defined in:
 
